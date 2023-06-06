@@ -75,7 +75,10 @@ def launch_setup(context, *args, **kwargs):
                       executable="static_transform_publisher",
                       arguments="0.12, 0.01, -0.224 0 1 0 0 base_link vectornav".split(" "),
                       parameters=[])
-
+    #TWR ranging
+    twr_rang = Node(  package="uwb_ranging",
+                      executable="talker",
+                      parameters=[] )
     zenoh_dds_brigde_process = ExecuteProcess(
                         cmd=['zenoh-bridge-dds', '-d', LaunchConfiguration('robot_id').perform(context), '--allow', '/cslam/.*']
                     )
@@ -118,6 +121,9 @@ def launch_setup(context, *args, **kwargs):
     schedule.append(imu)
     schedule.append(PopLaunchConfigurations()) 
 
+    schedule.append(PushLaunchConfigurations())
+    schedule.append(twr_rang)
+    schedule.append(PopLaunchConfigurations())
     return schedule
 
 
